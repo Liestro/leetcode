@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "solutions/TwoSum.hpp"
+
 int main()
 {
     std::cout << "Hello, world!" << std::endl;
