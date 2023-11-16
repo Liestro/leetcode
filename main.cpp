@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "solutions/TwoSum.hpp"
+#include "solutions/MedianOfTwoSortedArrays.hpp"
 
 int main()
 {
