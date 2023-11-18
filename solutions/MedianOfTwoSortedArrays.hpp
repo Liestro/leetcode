@@ -11,52 +11,49 @@ namespace median_of_two_sorted_arrays {
     using std::vector;
 
     class Solution {
-    private:
-        double median_of(vector<int>& vec, std::pair<unsigned, unsigned> vec_bounds) {
-            size_t vec_size = vec_bounds.second - vec_bounds.first;
-            if (vec_size % 2 == 1)
-                return vec[vec_bounds.first + vec_size / 2];
-            else
-                return (vec[vec_bounds.first +  vec_size / 2] + vec[(vec_bounds.first +  vec_size - 1) / 2]) / 2.;
-        }
-
-        double findMedianRecurse(vector<int>& nums1,
-                                 vector<int>& nums2,
-                                 std::pair<unsigned, unsigned> nums1_bounds,
-                                 std::pair<unsigned, unsigned> nums2_bounds)
-        {
-            unsigned nums1_size = nums1_bounds.second - nums1_bounds.first;
-            unsigned nums2_size = nums2_bounds.second - nums2_bounds.first;
-
-            double nums1_median = nums1_size == 0 ? 0 : median_of(nums1, nums1_bounds);
-            double nums2_median = nums2_size == 0 ? 0 : median_of(nums2, nums2_bounds);
-
-            if (nums1_size == 0) return nums2_median;
-            if (nums2_size == 0) return nums1_median;
-
-            if (nums2_size == 1 && nums1_size == 1)
-                return (nums1_median + nums2_median) / 2.;
-
-            if (nums1_median == nums2_median) return nums1_median;
-
-            unsigned bounds_correction = std::max( std::min(nums1_size, nums2_size) / 2, unsigned(1));
-            if (nums1_median < nums2_median) {
-                nums1_bounds.first += bounds_correction;
-                nums2_bounds.second -= bounds_correction;
-            } else {
-                nums2_bounds.first += bounds_correction;
-                nums1_bounds.second -= bounds_correction;
-            }
-
-            return findMedianRecurse(nums1, nums2, nums1_bounds, nums2_bounds);
-        }
-
     public:
         double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-            return findMedianRecurse(nums1,
-                                     nums2,
-                                     {0, nums1.size()},
-                                     {0, nums2.size()});
+            if (nums1.size() > nums2.size())
+                return findMedianSortedArrays(nums2, nums1);
+
+            if (nums1.empty()) {
+                if (nums2.size() % 2 == 1) {
+                    return nums2[nums2.size() / 2];
+                } else {
+                    return (nums2[nums2.size() / 2] + nums2[nums2.size() / 2 - 1]) / 2.;
+                }
+            }
+
+            int overall_left_elements = (nums1.size() + nums2.size() + 1) / 2;
+            std::pair<int, int> nums1_borders(0, nums1.size());
+
+            do {
+                int nums1_left_elements = (nums1_borders.second + nums1_borders.first + 1) / 2;
+                int nums2_left_elements = overall_left_elements - nums1_left_elements;
+
+                int nums1_left_max =
+                        (nums1_left_elements - 1) >= 0 ? nums1[nums1_left_elements - 1] : INT_MIN;
+                int nums1_right_min = nums1_left_elements < nums1.size() ? nums1[nums1_left_elements] : INT_MAX;
+
+                int nums2_left_max = nums2_left_elements - 1 >= 0 ? nums2[nums2_left_elements - 1] : INT_MIN;
+                int nums2_right_min = nums2_left_elements < nums2.size() ? nums2[nums2_left_elements] : INT_MAX;
+
+                if (nums1_left_max <= nums2_right_min && nums2_left_max <= nums1_right_min) {
+                    if ((nums1.size() + nums2.size()) % 2 == 1) {
+                        return std::max(nums1_left_max, nums2_left_max);
+                    } else {
+                        return (std::min(nums1_right_min, nums2_right_min) +
+                                std::max(nums1_left_max, nums2_left_max)) / 2.;
+                    }
+                } else if (nums1_left_max > nums2_right_min) {
+                    nums1_borders.second = (nums1_borders.second + nums1_borders.first) / 2;
+                } else {
+                    nums1_borders.first = nums1_left_elements;
+                }
+            }
+            while (nums1_borders.second >= nums1_borders.first);
+
+            return 0;
         }
     };
 }
