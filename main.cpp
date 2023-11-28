@@ -6,11 +6,15 @@
 
 #include "solutions/MedianOfTwoSortedArrays.hpp"
 #include "solutions/LongestPalindromicSubstring.hpp"
+#include "solutions/ZigzagConversion.hpp"
 
 int main()
 {
+    std::string inString("PAYPALISHIRING");
+    std::string inString2("A");
+
     std::cout <<
-    longest_palindromic_substring::Solution().longestPalindrome("babad")
+    zigzag_conversion::Solution().convert(inString2, 2)
     << std::endl;
 
     return 0;
